@@ -400,6 +400,8 @@ fault-tolerant-system/
 ├── .gitignore
 └── README.md
 ```text
+
+---
 ## Getting Started
 
 ### Prerequisites
