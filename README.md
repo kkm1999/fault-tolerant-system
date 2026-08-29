@@ -64,103 +64,104 @@ The system demonstrates fault-tolerant event processing through duplicate detect
                  │ Failed Events       │
                  └─────────────────────┘
 
-Technology Stack
-Frontend
-React
-Vite
-Tailwind CSS
-Backend
+## Technology Stack
+ # Frontend
+    React
+    Vite
+    Tailwind CSS
+# Backend
+    Node.js
+    Express.js
+    CORS
+# Database
+   SQLite
+    ORM
+   Prisma
+# Development Tools
+   Git
+   GitHub
+   PowerShell
+   npm
+## Project Structure
+
+                fault-tolerant-system/
+                │
+                ├── backend/
+                │   ├── lib/
+                │   │   └── prisma.js
+                │   │
+                │   ├── prisma/
+                │   │   ├── migrations/
+                │   │   └── schema.prisma
+                │   │
+                │   ├── services/
+                │   │   ├── fingerprint.js
+                │   │   └── normalizer.js
+                │   │
+                │   ├── generated/
+                │   │   └── prisma/
+                │   │
+                │   ├── server.js
+                │   ├── package.json
+                │   └── prisma7.config.ts
+                │
+                ├── frontend/
+                │   ├── src/
+                │   │   ├── App.jsx
+                │   │   └── style.css
+                │   │
+                │   ├── public/
+                │   ├── index.html
+                │   └── package.json
+                │
+                ├── .gitignore
+                └── README.md
+
+## Getting Started
+   Prerequisites
+
+# Make sure the following are installed:
+
 Node.js
-Express.js
-CORS
-Database
-SQLite
-ORM
-Prisma
-Development Tools
-Git
-GitHub
-PowerShell
-npm
-Project Structure
-fault-tolerant-system/
-│
-├── backend/
-│   ├── lib/
-│   │   └── prisma.js
-│   │
-│   ├── prisma/
-│   │   ├── migrations/
-│   │   └── schema.prisma
-│   │
-│   ├── services/
-│   │   ├── fingerprint.js
-│   │   └── normalizer.js
-│   │
-│   ├── generated/
-│   │   └── prisma/
-│   │
-│   ├── server.js
-│   ├── package.json
-│   └── prisma7.config.ts
-│
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx
-│   │   └── style.css
-│   │
-│   ├── public/
-│   ├── index.html
-│   └── package.json
-│
-├── .gitignore
-└── README.md
-
-Getting Started
-Prerequisites
-
-Make sure the following are installed:
-
-Node.js
 npm
 Git
 
-Verify the installations:
+# Verify the installations:
 
 node --version
 npm --version
 git --version
 Backend Setup
 
-Open a terminal and navigate to the backend:
-cd backend
+# Open a terminal and navigate to the backend:
+  cd backend
 
-Install dependencies:
+  Install dependencies:
 
-npm install
+  npm install
 
-Run database migrations:
+# Run database migrations:
 
 npx prisma migrate dev --name init
 
-Generate the Prisma client if required:
+# Generate the Prisma client if required:
 
 npx prisma generate
 Start the backend:
 
 node server.js
 
-The backend will run at:
+# The backend will run at:
 
 http://localhost:5000
 
-You should see:
+# You should see:
 
 Server running on http://localhost:5000
 
-Frontend Setup
+## Frontend Setup
 
-Open another terminal:
+# Open another terminal:
 
 cd frontend
 
@@ -168,20 +169,20 @@ Install dependencies:
 
 npm install
 
-Start the Vite development server:
+# Start the Vite development server:
 
 npm run dev
 
-The frontend will be available at:
+# The frontend will be available at:
 
 http://localhost:5173
 API Endpoints
 Health Check
 GET /
 
-Checks whether the backend API is running.
+# Checks whether the backend API is running.
 
-Example:
+# Example:
 
 curl http://localhost:5000/
 
@@ -193,9 +194,9 @@ Response:
 Process Event
 POST /api/events
 
-Processes a new event.
+# Processes a new event.
 
-Example request:
+# Example request:
 
 {
   "source": "client_A",
@@ -206,7 +207,7 @@ Example request:
   }
 }
 
-Successful response:
+# Successful response:
 
 {
   "success": true,
@@ -220,13 +221,13 @@ Successful response:
     "status": "processed"
   }
 }
-Duplicate Event
+# Duplicate Event
 
-Submitting the same event again generates the same fingerprint.
+# Submitting the same event again generates the same fingerprint.
 
-The system detects the existing event and does not create another database record.
+# The system detects the existing event and does not create another database record.
 
-Example response:
+# Example response:
 
 {
   "success": true,
@@ -234,13 +235,13 @@ Example response:
   "message": "Duplicate event ignored"
 }
 
-This provides idempotent event processing.
+# This provides idempotent event processing.
 
-Simulate Failure
+## Simulate Failure
 
-The API supports simulated database failures for testing fault handling.
+# The API supports simulated database failures for testing fault handling.
 
-Example:
+# Example:
 
 {
   "source": "client_TEST",
@@ -252,7 +253,7 @@ Example:
   }
 }
 
-Response:
+# Response:
 
 {
   "success": false,
@@ -260,7 +261,7 @@ Response:
   "message": "Simulated database failure"
 }
 
-The failed event is recorded in the FailedEvent database table.
+# The failed event is recorded in the FailedEvent database table.
 
 Get Events
 GET /api/events
@@ -447,23 +448,23 @@ The header displays the current API connectivity state:
 
 The dashboard also provides a refresh button for retrieving the latest data.
 
-Testing
+# Testing
 
 The system was tested using the following scenarios:
 
-Test	Expected Result	Status
-New event	Event stored	✅
-Duplicate event	Duplicate ignored	✅
-Simulated failure	Failure recorded	✅
-Recovery	Event processed successfully	✅
-Analytics	Correct aggregation	✅
-Client filter	Correct client results	✅
-Date filter	Correct date results	✅
-Combined filters	Correct filtered results	✅
-Dashboard refresh	Latest data displayed	✅
-Frontend production build	Build succeeds	✅
-Backend health check	API responds	✅
-Production Build
+| Test | Expected Result | Status |
+|---|---|---|
+| New event | Event stored | ✅ |
+| Duplicate event | Duplicate ignored | ✅ |
+| Simulated failure | Failure recorded | ✅ |
+| Recovery | Event processed successfully | ✅ |
+| Analytics | Correct aggregation | ✅ |
+| Client filter | Correct client results | ✅ |
+| Date filter | Correct date results | ✅ |
+| Combined filters | Correct filtered results | ✅ |
+| Dashboard refresh | Latest data displayed | ✅ |
+| Frontend production build | Build succeeds | ✅ |
+| Backend health check | API responds | ✅ |
 
 The frontend has been verified with:
 
