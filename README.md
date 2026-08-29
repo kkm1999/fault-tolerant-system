@@ -4,6 +4,12 @@ A full-stack event processing and analytics system designed to reliably ingest, 
 
 The system demonstrates fault-tolerant event processing through duplicate detection, fingerprint-based idempotency, simulated database failures, failed-event logging, recovery, and analytics filtering.
 
+## Live Demo
+
+🚀 **[Open Live Application](https://fault-tolerant-system.vercel.app/)**
+
+**Backend API:** https://fault-tolerant-system-1.onrender.com
+
 ## Architecture
 
 The system follows a three-layer architecture:
