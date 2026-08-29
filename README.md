@@ -366,7 +366,7 @@ Response                    |
 
 ## Project Structure
 
-
+```text
 fault-tolerant-system/
 │
 ├── backend/
@@ -399,8 +399,6 @@ fault-tolerant-system/
 │
 ├── .gitignore
 └── README.md
-
----
 
 ## Getting Started
 
