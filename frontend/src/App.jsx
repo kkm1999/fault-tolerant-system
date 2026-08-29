@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const API_URL = "http://localhost:5000";
+const API_URL = "https://fault-tolerant-system-1.onrender.com";
 
 function App() {
   const [analytics, setAnalytics] = useState({
