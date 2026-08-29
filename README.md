@@ -366,38 +366,39 @@ Response                    |
 
 ## Project Structure
 
+
 fault-tolerant-system/
-|
-+-- backend/
-|   +-- lib/
-|   |   +-- prisma.js
-|   |
-|   +-- prisma/
-|   |   +-- migrations/
-|   |   +-- schema.prisma
-|   |
-|   +-- services/
-|   |   +-- fingerprint.js
-|   |   +-- normalizer.js
-|   |
-|   +-- generated/
-|   |   +-- prisma/
-|   |
-|   +-- server.js
-|   +-- package.json
-|   +-- prisma7.config.ts
-|
-+-- frontend/
-|   +-- src/
-|   |   +-- App.jsx
-|   |   +-- style.css
-|   |
-|   +-- public/
-|   +-- index.html
-|   +-- package.json
-|
-+-- .gitignore
-+-- README.md
+│
+├── backend/
+│   ├── lib/
+│   │   └── prisma.js
+│   │
+│   ├── prisma/
+│   │   ├── migrations/
+│   │   └── schema.prisma
+│   │
+│   ├── services/
+│   │   ├── fingerprint.js
+│   │   └── normalizer.js
+│   │
+│   ├── generated/
+│   │   └── prisma/
+│   │
+│   ├── server.js
+│   ├── package.json
+│   └── prisma7.config.ts
+│
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx
+│   │   └── style.css
+│   │
+│   ├── public/
+│   ├── index.html
+│   └── package.json
+│
+├── .gitignore
+└── README.md
 
 ---
 
