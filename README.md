@@ -43,15 +43,6 @@ Responsibilities:
 - Provide analytics
 - Apply client and date filters
 
-### 3. Database Layer
-
-The system uses SQLite as the database and Prisma as the ORM.
-
-The database contains two main entities:
-
-- `Event` - stores successfully processed events
-- `FailedEvent` - stores failed processing attempts
-
 ### Architecture Diagram
 
 ```text
@@ -91,180 +82,17 @@ The database contains two main entities:
                          └──────────────────────┘
 ```
 
-### Event Processing Flow
 
-```text
-Incoming Event
-      │
-      ▼
-Validate Request
-      │
-      ▼
-Normalize Event
-      │
-      ▼
-Generate Fingerprint
-      │
-      ▼
-Check Existing Event
-      │
-      ├───────────────┐
-      │               │
-      ▼               ▼
-  Duplicate        New Event
-      │               │
-      ▼               ▼
-Return Duplicate   Check Failure
-Response               │
-                  ┌────┴────┐
-                  │         │
-                  ▼         ▼
-               Failure    Success
-                  │         │
-                  ▼         ▼
-            FailedEvent   Event
-              Record     Database
-```
+### 3. Database Layer
 
----
+The system uses SQLite as the database and Prisma as the ORM.
 
----
-
-## Architecture
-
-The application follows a three-layer architecture consisting of the frontend, backend API, and database.
-
-### High-Level Architecture
-
-```text
-+-----------------------------+
-|          FRONTEND           |
-|       React + Vite          |
-|                             |
-|  Dashboard                  |
-|  Event Submission           |
-|  Analytics Filters          |
-|  Event History              |
-+--------------+--------------+
-               |
-               | HTTP / REST API
-               v
-+-----------------------------+
-|           BACKEND           |
-|      Node.js + Express      |
-|                             |
-|  Event Validation           |
-|  Event Normalization        |
-|  Fingerprint Generation     |
-|  Duplicate Detection        |
-|  Failure Handling           |
-|  Analytics                  |
-+--------------+--------------+
-               |
-               | Prisma ORM
-               v
-+-----------------------------+
-|          DATABASE           |
-|            SQLite           |
-|                             |
-|  Event                      |
-|  FailedEvent                |
-+-----------------------------+
-```
-
-### Event Processing Architecture
-
-```text
-Incoming Event
-      |
-      v
-Validate Request
-      |
-      v
-Normalize Event
-      |
-      v
-Generate Fingerprint
-      |
-      v
-Check Duplicate
-      |
-      +----------------------+
-      |                      |
-      v                      v
-Duplicate                 New Event
-      |                      |
-      v                      v
-Return Duplicate       Check Failure
-Response                   |
-                       +----+----+
-                       |         |
-                       v         v
-                    Failure    Success
-                       |         |
-                       v         v
-                 FailedEvent   Event
-                   Record     Database
-```
-
-### Components
-
-#### Frontend
-
-The React and Vite frontend provides the user interface for:
-
-- Submitting events
-- Viewing processed events
-- Viewing failed events
-- Viewing analytics
-- Filtering analytics by client
-- Filtering analytics by date
-- Refreshing dashboard data
-- Simulating database failures
-
-#### Backend
-
-The Node.js and Express backend provides REST API endpoints and handles the event-processing pipeline.
-
-The backend is responsible for:
-
-- Receiving event requests
-- Normalizing incoming data
-- Generating deterministic fingerprints
-- Detecting duplicate events
-- Persisting successfully processed events
-- Recording failed events
-- Providing analytics
-- Applying client and date filters
-
-#### Database
-
-SQLite provides local persistent storage.
-
-Prisma ORM is used to communicate with the database and manage the database schema.
-
-The main database entities are:
+The database contains two main entities:
 
 - `Event` - stores successfully processed events
-- `FailedEvent` - stores events that failed during processing
+- `FailedEvent` - stores failed processing attempts
 
-### Data Flow
-
-1. The frontend sends an event to the backend using the REST API.
-2. The backend receives and validates the request.
-3. The event is normalized into a consistent structure.
-4. A deterministic fingerprint is generated from the normalized event.
-5. The fingerprint is checked against existing events.
-6. If the event already exists, it is treated as a duplicate and ignored.
-7. If the event is new, the system checks whether failure simulation is enabled.
-8. Failed events are stored in the `FailedEvent` table.
-9. Successful events are stored in the `Event` table.
-10. Analytics endpoints query the stored events and return aggregated results.
-11. The frontend displays the latest events, failures, and analytics.
-
----
-
-## Features
+### Features
 
 - Event ingestion through REST API
 - JSON event validation
@@ -299,7 +127,7 @@ The system consists of three main layers:
 3. Database - SQLite managed through Prisma ORM
 
 ### Data Flow
-
+```
 Incoming Event
     |
     v
@@ -330,7 +158,7 @@ Response                    |
                        v         v
                  FailedEvent    Event
                    Record      Database
-
+```
 ---
 
 ## Technology Stack
@@ -366,7 +194,7 @@ Response                    |
 
 ## Project Structure
 
-```text
+```
 fault-tolerant-system/
 │
 ├── backend/
@@ -399,7 +227,7 @@ fault-tolerant-system/
 │
 ├── .gitignore
 └── README.md
-```text
+```
 
 ---
 ## Getting Started
@@ -831,25 +659,7 @@ https://github.com/kkm1999/fault-tolerant-system
 
 ---
 
-# Future Improvements
 
-Possible future enhancements include:
-
-- Automatic retry queue
-- Background job processing
-- Redis or message queue integration
-- PostgreSQL for production environments
-- Authentication and authorization
-- Rate limiting
-- Structured logging
-- Monitoring and alerting
-- Advanced analytics charts
-- Pagination for large event datasets
-- Docker containerization
-- Automated unit and integration tests
-- CI/CD pipeline
-
----
 
 # Conclusion
 
