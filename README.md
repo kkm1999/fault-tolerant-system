@@ -4,6 +4,266 @@ A full-stack event processing and analytics system designed to reliably ingest, 
 
 The system demonstrates fault-tolerant event processing through duplicate detection, fingerprint-based idempotency, simulated database failures, failed-event logging, recovery, and analytics filtering.
 
+## Architecture
+
+The system follows a three-layer architecture:
+
+### 1. Frontend Layer
+
+The frontend is built with React and Vite.
+
+Responsibilities:
+
+- Dashboard interface
+- Event submission
+- Analytics display
+- Client filtering
+- Date-range filtering
+- Event history
+- Failed event history
+- System status
+- Dashboard refresh
+
+The frontend communicates with the backend using HTTP REST API requests.
+
+### 2. Backend Layer
+
+The backend is built with Node.js and Express.
+
+Responsibilities:
+
+- Receive incoming events
+- Validate request data
+- Normalize event fields
+- Generate deterministic fingerprints
+- Detect duplicate events
+- Persist successfully processed events
+- Simulate database failures
+- Record failed events
+- Provide analytics
+- Apply client and date filters
+
+### 3. Database Layer
+
+The system uses SQLite as the database and Prisma as the ORM.
+
+The database contains two main entities:
+
+- `Event` - stores successfully processed events
+- `FailedEvent` - stores failed processing attempts
+
+### Architecture Diagram
+
+```text
+                         ┌──────────────────────┐
+                         │       FRONTEND       │
+                         │     React + Vite     │
+                         │                      │
+                         │  Dashboard           │
+                         │  Event Submission    │
+                         │  Analytics           │
+                         │  Filters             │
+                         │  Event History       │
+                         └──────────┬───────────┘
+                                    │
+                                    │ HTTP / REST API
+                                    ▼
+                         ┌──────────────────────┐
+                         │       BACKEND        │
+                         │   Node.js + Express  │
+                         │                      │
+                         │  Validation          │
+                         │  Normalization       │
+                         │  Fingerprinting      │
+                         │  Deduplication       │
+                         │  Failure Handling    │
+                         │  Analytics           │
+                         └──────────┬───────────┘
+                                    │
+                                    │ Prisma ORM
+                                    ▼
+                         ┌──────────────────────┐
+                         │       DATABASE       │
+                         │        SQLite        │
+                         │                      │
+                         │  Event               │
+                         │  FailedEvent         │
+                         └──────────────────────┘
+```
+
+### Event Processing Flow
+
+```text
+Incoming Event
+      │
+      ▼
+Validate Request
+      │
+      ▼
+Normalize Event
+      │
+      ▼
+Generate Fingerprint
+      │
+      ▼
+Check Existing Event
+      │
+      ├───────────────┐
+      │               │
+      ▼               ▼
+  Duplicate        New Event
+      │               │
+      ▼               ▼
+Return Duplicate   Check Failure
+Response               │
+                  ┌────┴────┐
+                  │         │
+                  ▼         ▼
+               Failure    Success
+                  │         │
+                  ▼         ▼
+            FailedEvent   Event
+              Record     Database
+```
+
+---
+
+---
+
+## Architecture
+
+The application follows a three-layer architecture consisting of the frontend, backend API, and database.
+
+### High-Level Architecture
+
+```text
++-----------------------------+
+|          FRONTEND           |
+|       React + Vite          |
+|                             |
+|  Dashboard                  |
+|  Event Submission           |
+|  Analytics Filters          |
+|  Event History              |
++--------------+--------------+
+               |
+               | HTTP / REST API
+               v
++-----------------------------+
+|           BACKEND           |
+|      Node.js + Express      |
+|                             |
+|  Event Validation           |
+|  Event Normalization        |
+|  Fingerprint Generation     |
+|  Duplicate Detection        |
+|  Failure Handling           |
+|  Analytics                  |
++--------------+--------------+
+               |
+               | Prisma ORM
+               v
++-----------------------------+
+|          DATABASE           |
+|            SQLite           |
+|                             |
+|  Event                      |
+|  FailedEvent                |
++-----------------------------+
+```
+
+### Event Processing Architecture
+
+```text
+Incoming Event
+      |
+      v
+Validate Request
+      |
+      v
+Normalize Event
+      |
+      v
+Generate Fingerprint
+      |
+      v
+Check Duplicate
+      |
+      +----------------------+
+      |                      |
+      v                      v
+Duplicate                 New Event
+      |                      |
+      v                      v
+Return Duplicate       Check Failure
+Response                   |
+                       +----+----+
+                       |         |
+                       v         v
+                    Failure    Success
+                       |         |
+                       v         v
+                 FailedEvent   Event
+                   Record     Database
+```
+
+### Components
+
+#### Frontend
+
+The React and Vite frontend provides the user interface for:
+
+- Submitting events
+- Viewing processed events
+- Viewing failed events
+- Viewing analytics
+- Filtering analytics by client
+- Filtering analytics by date
+- Refreshing dashboard data
+- Simulating database failures
+
+#### Backend
+
+The Node.js and Express backend provides REST API endpoints and handles the event-processing pipeline.
+
+The backend is responsible for:
+
+- Receiving event requests
+- Normalizing incoming data
+- Generating deterministic fingerprints
+- Detecting duplicate events
+- Persisting successfully processed events
+- Recording failed events
+- Providing analytics
+- Applying client and date filters
+
+#### Database
+
+SQLite provides local persistent storage.
+
+Prisma ORM is used to communicate with the database and manage the database schema.
+
+The main database entities are:
+
+- `Event` - stores successfully processed events
+- `FailedEvent` - stores events that failed during processing
+
+### Data Flow
+
+1. The frontend sends an event to the backend using the REST API.
+2. The backend receives and validates the request.
+3. The event is normalized into a consistent structure.
+4. A deterministic fingerprint is generated from the normalized event.
+5. The fingerprint is checked against existing events.
+6. If the event already exists, it is treated as a duplicate and ignored.
+7. If the event is new, the system checks whether failure simulation is enabled.
+8. Failed events are stored in the `FailedEvent` table.
+9. Successful events are stored in the `Event` table.
+10. Analytics endpoints query the stored events and return aggregated results.
+11. The frontend displays the latest events, failures, and analytics.
+
+---
+
 ## Features
 
 - Event ingestion through REST API
@@ -28,356 +288,395 @@ The system demonstrates fault-tolerant event processing through duplicate detect
 - Failed event history
 - Production frontend build
 
+---
+
 ## Architecture
 
-```text
-                 ┌─────────────────────┐
-                 │      Frontend       │
-                 │   React + Vite      │
-                 │                     │
-                 │ Dashboard           │
-                 │ Event Submission    │
-                 │ Filters             │
-                 │ Analytics           │
-                 └──────────┬──────────┘
-                            │
-                            │ HTTP / REST API
-                            ▼
-                 ┌─────────────────────┐
-                 │       Backend       │
-                 │  Node.js + Express  │
-                 │                     │
-                 │ Validation          │
-                 │ Normalization       │
-                 │ Fingerprinting      │
-                 │ Deduplication       │
-                 │ Failure Handling    │
-                 │ Analytics           │
-                 └──────────┬──────────┘
-                            │
-                            │ Prisma ORM
-                            ▼
-                 ┌─────────────────────┐
-                 │       SQLite        │
-                 │                     │
-                 │ Events              │
-                 │ Failed Events       │
-                 └─────────────────────┘
+The system consists of three main layers:
+
+1. Frontend - React and Vite dashboard
+2. Backend - Node.js and Express REST API
+3. Database - SQLite managed through Prisma ORM
+
+### Data Flow
+
+Incoming Event
+    |
+    v
+Validate JSON
+    |
+    v
+Normalize Event
+    |
+    v
+Generate Fingerprint
+    |
+    v
+Check Existing Fingerprint
+    |
+    +-------------------------+
+    |                         |
+    v                         v
+Existing Event           New Event
+    |                         |
+    v                         v
+Return Duplicate        Check Failure
+Response                    |
+                       +----+----+
+                       |         |
+                       v         v
+                    Failure    Success
+                       |         |
+                       v         v
+                 FailedEvent    Event
+                   Record      Database
+
+---
 
 ## Technology Stack
- # Frontend
-    React
-    Vite
-    Tailwind CSS
-# Backend
-    Node.js
-    Express.js
-    CORS
-# Database
-   SQLite
-    ORM
-   Prisma
-# Development Tools
-   Git
-   GitHub
-   PowerShell
-   npm
+
+### Frontend
+
+- React
+- Vite
+- Tailwind CSS
+
+### Backend
+
+- Node.js
+- Express.js
+- CORS
+
+### Database
+
+- SQLite
+
+### ORM
+
+- Prisma
+
+### Development Tools
+
+- Git
+- GitHub
+- PowerShell
+- npm
+
+---
+
 ## Project Structure
 
-                fault-tolerant-system/
-                │
-                ├── backend/
-                │   ├── lib/
-                │   │   └── prisma.js
-                │   │
-                │   ├── prisma/
-                │   │   ├── migrations/
-                │   │   └── schema.prisma
-                │   │
-                │   ├── services/
-                │   │   ├── fingerprint.js
-                │   │   └── normalizer.js
-                │   │
-                │   ├── generated/
-                │   │   └── prisma/
-                │   │
-                │   ├── server.js
-                │   ├── package.json
-                │   └── prisma7.config.ts
-                │
-                ├── frontend/
-                │   ├── src/
-                │   │   ├── App.jsx
-                │   │   └── style.css
-                │   │
-                │   ├── public/
-                │   ├── index.html
-                │   └── package.json
-                │
-                ├── .gitignore
-                └── README.md
+fault-tolerant-system/
+|
++-- backend/
+|   +-- lib/
+|   |   +-- prisma.js
+|   |
+|   +-- prisma/
+|   |   +-- migrations/
+|   |   +-- schema.prisma
+|   |
+|   +-- services/
+|   |   +-- fingerprint.js
+|   |   +-- normalizer.js
+|   |
+|   +-- generated/
+|   |   +-- prisma/
+|   |
+|   +-- server.js
+|   +-- package.json
+|   +-- prisma7.config.ts
+|
++-- frontend/
+|   +-- src/
+|   |   +-- App.jsx
+|   |   +-- style.css
+|   |
+|   +-- public/
+|   +-- index.html
+|   +-- package.json
+|
++-- .gitignore
++-- README.md
+
+---
 
 ## Getting Started
-   Prerequisites
 
-# Make sure the following are installed:
+### Prerequisites
 
-Node.js
-npm
-Git
+Make sure the following are installed:
 
-# Verify the installations:
+- Node.js
+- npm
+- Git
 
-node --version
-npm --version
-git --version
-Backend Setup
+Verify the installations:
 
-# Open a terminal and navigate to the backend:
-  cd backend
+    node --version
+    npm --version
+    git --version
 
-  Install dependencies:
+---
 
-  npm install
+## Backend Setup
 
-# Run database migrations:
+Open a terminal and navigate to the backend:
 
-npx prisma migrate dev --name init
-
-# Generate the Prisma client if required:
-
-npx prisma generate
-Start the backend:
-
-node server.js
-
-# The backend will run at:
-
-http://localhost:5000
-
-# You should see:
-
-Server running on http://localhost:5000
-
-## Frontend Setup
-
-# Open another terminal:
-
-cd frontend
+    cd backend
 
 Install dependencies:
 
-npm install
+    npm install
 
-# Start the Vite development server:
+Run the Prisma database migration:
 
-npm run dev
+    npx prisma migrate dev --name init
 
-# The frontend will be available at:
+Generate the Prisma client if required:
 
-http://localhost:5173
-API Endpoints
-Health Check
-GET /
+    npx prisma generate
 
-# Checks whether the backend API is running.
+Start the backend server:
 
-# Example:
+    node server.js
 
-curl http://localhost:5000/
+The backend will run at:
+
+    http://localhost:5000
+
+You should see:
+
+    Server running on http://localhost:5000
+
+---
+
+## Frontend Setup
+
+Open another terminal:
+
+    cd frontend
+
+Install dependencies:
+
+    npm install
+
+Start the Vite development server:
+
+    npm run dev
+
+The frontend will be available at:
+
+    http://localhost:5173
+
+---
+
+# API Documentation
+
+## Health Check
+
+### GET /
+
+Checks whether the backend API is running.
+
+Example:
+
+    curl http://localhost:5000/
 
 Response:
 
-{
-  "message": "Fault-Tolerant Data Processing API is running"
-}
-Process Event
-POST /api/events
+    {
+      "message": "Fault-Tolerant Data Processing API is running"
+    }
 
-# Processes a new event.
+---
 
-# Example request:
+## Process Event
 
-{
-  "source": "client_A",
-  "payload": {
-    "metric": "sales",
-    "amount": "1200",
-    "timestamp": "2024/01/01"
-  }
-}
+### POST /api/events
 
-# Successful response:
+Processes a new event.
 
-{
-  "success": true,
-  "duplicate": false,
-  "message": "Event processed successfully",
-  "data": {
-    "id": 1,
-    "clientId": "client_A",
-    "metric": "sales",
-    "amount": 1200,
-    "status": "processed"
-  }
-}
-# Duplicate Event
+Example request:
 
-# Submitting the same event again generates the same fingerprint.
+    {
+      "source": "client_A",
+      "payload": {
+        "metric": "sales",
+        "amount": "1200",
+        "timestamp": "2024/01/01"
+      }
+    }
 
-# The system detects the existing event and does not create another database record.
+Successful response:
 
-# Example response:
+    {
+      "success": true,
+      "duplicate": false,
+      "message": "Event processed successfully",
+      "data": {
+        "id": 1,
+        "clientId": "client_A",
+        "metric": "sales",
+        "amount": 1200,
+        "status": "processed"
+      }
+    }
 
-{
-  "success": true,
-  "duplicate": true,
-  "message": "Duplicate event ignored"
-}
+---
 
-# This provides idempotent event processing.
+## Duplicate Event Detection
 
-## Simulate Failure
+Submitting the same event again generates the same deterministic fingerprint.
 
-# The API supports simulated database failures for testing fault handling.
+The system checks whether the fingerprint already exists before creating a new database record.
 
-# Example:
+Example response:
 
-{
-  "source": "client_TEST",
-  "simulateFailure": true,
-  "payload": {
-    "metric": "test",
-    "amount": "1000",
-    "timestamp": "2024/01/07"
-  }
-}
+    {
+      "success": true,
+      "duplicate": true,
+      "message": "Duplicate event ignored"
+    }
 
-# Response:
+This provides idempotent event processing and prevents duplicate records.
 
-{
-  "success": false,
-  "simulatedFailure": true,
-  "message": "Simulated database failure"
-}
+---
 
-# The failed event is recorded in the FailedEvent database table.
+## Simulate Database Failure
 
-Get Events
-GET /api/events
+The API supports simulated database failures for testing fault handling.
+
+Example request:
+
+    {
+      "source": "client_TEST",
+      "simulateFailure": true,
+      "payload": {
+        "metric": "test",
+        "amount": "1000",
+        "timestamp": "2024/01/07"
+      }
+    }
+
+Response:
+
+    {
+      "success": false,
+      "simulatedFailure": true,
+      "message": "Simulated database failure"
+    }
+
+The failed event is recorded in the FailedEvent database table.
+
+---
+
+## Get Events
+
+### GET /api/events
 
 Returns processed events and failed events.
 
 Example:
 
-curl http://localhost:5000/api/events
+    curl http://localhost:5000/api/events
 
 Response structure:
 
-{
-  "success": true,
-  "events": [],
-  "failedEvents": []
-}
-Analytics API
-Get All Analytics
-GET /api/analytics
+    {
+      "success": true,
+      "events": [],
+      "failedEvents": []
+    }
+
+---
+
+# Analytics API
+
+## Get All Analytics
+
+### GET /api/analytics
 
 Returns aggregated event statistics.
 
 Example:
 
-GET /api/analytics
+    GET /api/analytics
 
 Example response:
 
-{
-  "success": true,
-  "filters": {
-    "client": "",
-    "from": "",
-    "to": ""
-  },
-  "totalEvents": 5,
-  "totalAmount": 22200,
-  "byClient": [
     {
-      "client": "client_A",
-      "count": 1,
-      "totalAmount": 1200
+      "success": true,
+      "filters": {
+        "client": "",
+        "from": "",
+        "to": ""
+      },
+      "totalEvents": 5,
+      "totalAmount": 22200,
+      "byClient": [
+        {
+          "client": "client_A",
+          "count": 1,
+          "totalAmount": 1200
+        }
+      ]
     }
-  ]
-}
-Filter by Client
-GET /api/analytics?client=client_C
 
-Example result:
+---
 
-{
-  "success": true,
-  "filters": {
-    "client": "client_C",
-    "from": "",
-    "to": ""
-  },
-  "totalEvents": 2,
-  "totalAmount": 11000
-}
-Filter by Date
-GET /api/analytics?from=2024-01-03&to=2024-01-04
+## Filter by Client
+
+Example:
+
+    GET /api/analytics?client=client_C
+
+Example response:
+
+    {
+      "success": true,
+      "filters": {
+        "client": "client_C",
+        "from": "",
+        "to": ""
+      },
+      "totalEvents": 2,
+      "totalAmount": 11000
+    }
+
+---
+
+## Filter by Date
+
+Example:
+
+    GET /api/analytics?from=2024-01-03&to=2024-01-04
 
 The date range is inclusive.
 
 For example:
 
-2024-01-03 → 2024-01-04
+    2024-01-03 to 2024-01-04
 
 includes events occurring on both dates.
 
-Combined Filters
+---
 
-Client and date filters can be used together:
+## Combined Filters
 
-GET /api/analytics?client=client_C&from=2024-01-03&to=2024-01-04
-Event Processing Flow
+Client and date filters can be used together.
 
-The event processing pipeline works as follows:
+Example:
 
-Incoming Event
-      │
-      ▼
-Validate JSON
-      │
-      ▼
-Normalize Event
-      │
-      ▼
-Generate Fingerprint
-      │
-      ▼
-Check Existing Fingerprint
-      │
-      ├───────────────┐
-      │               │
-      ▼               ▼
- Existing          New Event
- Event                 │
-      │                ▼
-      ▼          Check Failure
- Return Duplicate      │
- Response         ┌────┴────┐
-                   │         │
-                   ▼         ▼
-                Failure    Success
-                   │         │
-                   ▼         ▼
-             FailedEvent   Event
-               Record     Database
-Fault Tolerance
+    GET /api/analytics?client=client_C&from=2024-01-03&to=2024-01-04
+
+---
+
+# Fault Tolerance
 
 The system demonstrates fault tolerance through several mechanisms.
 
-1. Duplicate Detection
+## 1. Duplicate Detection
 
 Each normalized event is converted into a deterministic fingerprint.
 
@@ -385,68 +684,86 @@ The fingerprint is used to identify events that have already been processed.
 
 This prevents duplicate database records when the same event is submitted multiple times.
 
-2. Failure Recording
+## 2. Failure Recording
 
 When database failure simulation is enabled, the event is not silently discarded.
 
 Instead, the system records:
 
-Client ID
-Failure reason
-Original raw payload
-Timestamp
+- Client ID
+- Failure reason
+- Original raw payload
+- Timestamp
 
 in the failed-event table.
 
-3. Recovery
+## 3. Recovery
 
 After a simulated failure, the system can process a new event successfully when the failure condition is removed.
 
-This demonstrates the recovery flow:
+The recovery flow is:
 
 Event
-  ↓
+  |
+  v
 Failure
-  ↓
+  |
+  v
 Failed Event Recorded
-  ↓
+  |
+  v
 Retry / Recovery
-  ↓
+  |
+  v
 Successful Processing
-Frontend Dashboard
 
-The dashboard provides:
+---
 
-Statistics
-Total Events
-Total Amount
-Processed Events
-Failed Attempts
-Analytics Filters
-Client
-From Date
-To Date
-Event Submission
+# Frontend Dashboard
 
-Users can submit raw JSON events directly from the dashboard.
+The dashboard provides a simple interface for monitoring and interacting with the system.
 
-Failure Simulation
-
-A checkbox allows database failure behavior to be demonstrated without manually calling the API.
-
-Event History
+## Statistics
 
 The dashboard displays:
 
-Successfully processed events
-Failed/rejected events
-System Status
+- Total Events
+- Total Amount
+- Processed Events
+- Failed Attempts
+
+## Analytics Filters
+
+Users can filter analytics using:
+
+- Client
+- From Date
+- To Date
+
+## Event Submission
+
+Users can submit raw JSON events directly from the dashboard.
+
+## Failure Simulation
+
+A checkbox allows database failure behavior to be demonstrated without manually calling the API.
+
+## Event History
+
+The dashboard displays:
+
+- Successfully processed events
+- Failed or rejected events
+
+## System Status
 
 The header displays the current API connectivity state:
 
-● System Online
+    System Online
 
 The dashboard also provides a refresh button for retrieving the latest data.
+
+---
 
 # Testing
 
@@ -454,56 +771,87 @@ The system was tested using the following scenarios:
 
 | Test | Expected Result | Status |
 |---|---|---|
-| New event | Event stored | ✅ |
-| Duplicate event | Duplicate ignored | ✅ |
-| Simulated failure | Failure recorded | ✅ |
-| Recovery | Event processed successfully | ✅ |
-| Analytics | Correct aggregation | ✅ |
-| Client filter | Correct client results | ✅ |
-| Date filter | Correct date results | ✅ |
-| Combined filters | Correct filtered results | ✅ |
-| Dashboard refresh | Latest data displayed | ✅ |
-| Frontend production build | Build succeeds | ✅ |
-| Backend health check | API responds | ✅ |
+| New event | Event stored | Passed |
+| Duplicate event | Duplicate ignored | Passed |
+| Simulated failure | Failure recorded | Passed |
+| Recovery | Event processed successfully | Passed |
+| Analytics | Correct aggregation | Passed |
+| Client filter | Correct client results | Passed |
+| Date filter | Correct date results | Passed |
+| Combined filters | Correct filtered results | Passed |
+| Dashboard refresh | Latest data displayed | Passed |
+| Frontend production build | Build succeeds | Passed |
+| Backend health check | API responds | Passed |
+
+---
+
+# Production Build
 
 The frontend has been verified with:
 
-npm run build
+    npm run build
 
 The production build generates the dist directory.
 
 Example:
 
-dist/
-├── index.html
-└── assets/
-Database
+    dist/
+    +-- index.html
+    +-- assets/
+
+---
+
+# Database
 
 The application uses SQLite for local persistence.
 
 Prisma manages the database schema and migrations.
 
-Main entities include:
+## Main Entities
 
-Event
-FailedEvent
+- Event
+- FailedEvent
+
+### Event
 
 The Event entity stores successfully processed events.
 
+### FailedEvent
+
 The FailedEvent entity stores events that could not be processed because of simulated or processing failures.
 
-GitHub
+---
 
-Repository:
+# GitHub Repository
+
+The source code is available on GitHub:
 
 https://github.com/kkm1999/fault-tolerant-system
 
-Future Improvements
+---
 
+# Future Improvements
+
+Possible future enhancements include:
+
+- Automatic retry queue
+- Background job processing
+- Redis or message queue integration
+- PostgreSQL for production environments
+- Authentication and authorization
+- Rate limiting
+- Structured logging
+- Monitoring and alerting
+- Advanced analytics charts
+- Pagination for large event datasets
+- Docker containerization
+- Automated unit and integration tests
+- CI/CD pipeline
+
+---
+
+# Conclusion
 
 The Fault-Tolerant Data Processing System demonstrates a complete event-processing workflow with reliable ingestion, normalization, fingerprint-based duplicate detection, database persistence, failure handling, recovery, analytics, and a web-based dashboard.
 
 The project combines a React/Vite frontend with a Node.js/Express backend, Prisma ORM, and SQLite database to provide an end-to-end fault-tolerant data processing solution.
-
-
-
